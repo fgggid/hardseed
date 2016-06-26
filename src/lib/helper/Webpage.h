@@ -99,6 +99,7 @@ class Webpage
         double aver_speed_download_;
         const string user_agent_;
         vector<string> cookie_items_list_;
+        struct curl_slist *expect_list_ = NULL;
 };
 
 

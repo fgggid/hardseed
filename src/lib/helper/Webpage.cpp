@@ -416,6 +416,10 @@ Webpage::Webpage ( const string& url,
     }
     curl_slist_free_all(p_cookies_old);
 
+    // disable "Expect: 100-continue"
+    expect_list_ = curl_slist_append(expect_list_, "Expect:");
+    checkErrLibcurl(curl_easy_setopt(p_curl_, CURLOPT_HTTPHEADER, expect_list_), libcurl_err_info_buff_);
+
     // read webpage file into string
     ifstream ifs(localfile);
     string line;
@@ -437,6 +441,8 @@ Webpage::Webpage ( const string& url,
 
 Webpage::~Webpage ()
 {
+    if (expect_list_)
+        curl_slist_free_all(expect_list_);
     cleanupLibcul(p_curl_);
 }
 
@@ -573,7 +579,6 @@ Webpage::download_ ( const string& raw_url,
         sleep(retry_sleep_second);
     }
     fclose(fs);
-
 
     return(b_downloaded);
 }
